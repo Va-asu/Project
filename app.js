@@ -1,5 +1,6 @@
 const express=require("express");
 const bodyparser=require("body-parser");
+const axios = require('axios');
 const mongoose=require("mongoose");
 
 const app=express();
@@ -17,21 +18,45 @@ con.on('open',function(){
 
 const devices=new mongoose.Schema({
     deviceName:String,
-    Location:String
+    Locations:String
 });
 
 const Data=mongoose.model("Data",devices);
 
-app.use(Express.json());
+app.use(express.json());
 
 app.get("/:name",function(req,res){
     Data.find({deviceName:req.params.name}).exec()
     .then((result) => {
+       // console.log(result);
         var loc=[];
-       for (let i =result.length-1;i>=0;i--) {
-           loc[i]=result[i].Location;
+        let finalObject=[];
+        var i=result.length-1,count=0;
+       while(i>=0&&count<=50){
+           loc[i]=result[i].Locations;
+           axios.get('https://maps.googleapis.com/maps/api/geocode/json',{
+               params:{
+                   address:loc[i],
+                   key:'AIzaSyA5bwbEsAOUMOI4RK2zXcIayG4vjuQSpcw'
+               }
+           }).then(function(response){
+               var add=response.data.results[0].formatted_address;
+               var lat=response.data.results[0].geometry.location.lat;
+               var lng=response.data.results[0].geometry.location.lng;
+               let obj={};
+               obj.add=String(add);
+               obj.Location=[lat,lng];
+               //console.log(obj);
+               finalObject.push(obj);
+               console.log(finalObject);
+           }).catch(function(error){
+               console.log(error);
+           })
+           count++;
+           i--;
        }
-       res.json(loc); 
+      
+       res.send(finalObject);
     })
 })
 
