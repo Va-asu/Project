@@ -6,7 +6,7 @@ const mongoose=require("mongoose");
 const app=express();
 app.use(bodyparser.urlencoded({extended:true}));
 
-mongoose.connect("mongodb://localhost:27017/backendDB", {
+mongoose.connect("mongodb+srv://Vasudev:vasu123@cluster0.ad0pn.mongodb.net/backendDB?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -56,7 +56,7 @@ app.get("/:name",function(req,res){
            i--;
        }
       
-       res.send(finalObject);
+       res.json(finalObject);
     })
 })
 
