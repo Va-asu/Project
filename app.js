@@ -24,13 +24,15 @@ const devices=new mongoose.Schema({
 const Data=mongoose.model("Data",devices);
 
 app.use(express.json());
-
+let finalObject=[];
+var str="";
 app.get("/:name",function(req,res){
     Data.find({deviceName:req.params.name}).exec()
     .then((result) => {
        // console.log(result);
         var loc=[];
-        let finalObject=[];
+       
+        
         var i=result.length-1,count=0;
        while(i>=0&&count<=50){
            loc[i]=result[i].Locations;
@@ -47,6 +49,8 @@ app.get("/:name",function(req,res){
                obj.add=String(add);
                obj.Location=[lat,lng];
                //console.log(obj);
+               str+=JSON.stringify(obj);
+               console.log(str);
                finalObject.push(obj);
                console.log(finalObject);
            }).catch(function(error){
@@ -56,8 +60,9 @@ app.get("/:name",function(req,res){
            i--;
        }
       
-       res.json(finalObject);
+       
     })
+    res.json(finalObject);
 })
 
 let port = process.env.PORT;
