@@ -29,6 +29,10 @@ app.use(express.json());
 
 var finalObject=[];
 
+app.get("/",function(req,res){
+    res.send("please after / use devive name either MI or samsung");
+})
+
 app.get("/:name",function(req,res){
     
     Data.find({deviceName:req.params.name}).exec()
