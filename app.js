@@ -6,6 +6,8 @@ const mongoose=require("mongoose");
 const app=express();
 app.use(bodyparser.urlencoded({extended:true}));
 
+
+
 mongoose.connect("mongodb+srv://Vasudev:vasu123@cluster0.ad0pn.mongodb.net/backendDB?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,15 +26,15 @@ const devices=new mongoose.Schema({
 const Data=mongoose.model("Data",devices);
 
 app.use(express.json());
-let finalObject=[];
-var str="";
+
+var finalObject=[];
+
 app.get("/:name",function(req,res){
+    
     Data.find({deviceName:req.params.name}).exec()
     .then((result) => {
-       // console.log(result);
         var loc=[];
-       
-        
+   
         var i=result.length-1,count=0;
        while(i>=0&&count<=50){
            loc[i]=result[i].Locations;
@@ -48,21 +50,19 @@ app.get("/:name",function(req,res){
                let obj={};
                obj.add=String(add);
                obj.Location=[lat,lng];
-               //console.log(obj);
-               str+=JSON.stringify(obj);
-               console.log(str);
                finalObject.push(obj);
-               console.log(finalObject);
            }).catch(function(error){
                console.log(error);
            })
            count++;
            i--;
        }
-      
-       
     })
-    res.json(finalObject);
+    var arr=finalObject;
+    finalObject=[];
+    console.log(arr);
+    //res.write("locations of "+req.params.name+" is :- "+arr);
+     res.json(arr);
 })
 
 let port = process.env.PORT;
